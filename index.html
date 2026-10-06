@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Project HQ v1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-block">
+        <div class="brand-mark">PH</div>
+        <div>
+          <div class="brand-name">Project HQ</div>
+          <div class="brand-version">Mega Template v1</div>
+        </div>
+      </div>
+
+      <nav class="nav-section" aria-label="Saved views">
+        <div class="nav-label">Views</div>
+        <button class="nav-item active" data-view="all"><span>All Projects</span><span class="count" id="count-all">0</span></button>
+        <button class="nav-item" data-view="active"><span>Active</span><span class="count" id="count-active">0</span></button>
+        <button class="nav-item" data-view="ideas"><span>Ideas</span><span class="count" id="count-ideas">0</span></button>
+        <button class="nav-item" data-view="ready"><span>Ready</span><span class="count" id="count-ready">0</span></button>
+        <button class="nav-item" data-view="blocked"><span>Blocked</span><span class="count" id="count-blocked">0</span></button>
+        <button class="nav-item" data-view="waiting"><span>Waiting</span><span class="count" id="count-waiting">0</span></button>
+        <button class="nav-item" data-view="paused"><span>Paused</span><span class="count" id="count-paused">0</span></button>
+        <button class="nav-item" data-view="attempted"><span>Attempted</span><span class="count" id="count-attempted">0</span></button>
+        <button class="nav-item" data-view="completed"><span>Completed</span><span class="count" id="count-completed">0</span></button>
+        <button class="nav-item" data-view="archived"><span>Archived</span><span class="count" id="count-archived">0</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-action" id="exportBtn">Export backup</button>
+        <label class="sidebar-action file-label" for="importInput">Import backup</label>
+        <input type="file" id="importInput" accept="application/json" hidden />
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button mobile-only" id="menuBtn" aria-label="Open menu">☰</button>
+        <div>
+          <h1>Projects</h1>
+          <p>Your operating view across ideas, active work, pauses, attempts and completions.</p>
+        </div>
+        <button class="primary-button" id="addProjectBtn">+ New Project</button>
+      </header>
+
+      <section class="stats-grid" id="statsGrid"></section>
+
+      <section class="panel projects-panel">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Search projects, areas, next actions…" />
+          </div>
+          <div class="toolbar-actions">
+            <select id="statusFilter" aria-label="Filter by status">
+              <option value="">All statuses</option>
+            </select>
+            <select id="priorityFilter" aria-label="Filter by priority">
+              <option value="">All priorities</option>
+            </select>
+            <select id="stageFilter" aria-label="Filter by stage">
+              <option value="">All stages</option>
+            </select>
+            <button class="secondary-button" id="columnsBtn">Columns</button>
+          </div>
+        </div>
+
+        <div class="active-view-row">
+          <div>
+            <span class="eyebrow">Current view</span>
+            <strong id="viewTitle">All Projects</strong>
+          </div>
+          <div class="result-count" id="resultCount">0 projects</div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="projectsTable">
+            <thead><tr id="tableHead"></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" id="emptyState" hidden>
+          <div class="empty-icon">◎</div>
+          <h3>No projects match this view.</h3>
+          <p>Adjust your filters or add a new project.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="backdrop" id="backdrop" hidden></div>
+
+  <aside class="drawer" id="projectDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <button class="icon-button" id="closeDrawerBtn" aria-label="Close project">←</button>
+      <div class="drawer-title-wrap">
+        <div class="drawer-kicker" id="drawerId">PRJ-000</div>
+        <h2 id="drawerTitle">Project</h2>
+      </div>
+      <button class="secondary-button compact" id="editProjectBtn">Edit</button>
+    </div>
+    <div class="drawer-meta" id="drawerMeta"></div>
+    <div class="tabs" id="drawerTabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="tasks">Tasks</button>
+      <button class="tab" data-tab="activity">Activity</button>
+      <button class="tab" data-tab="decisions">Decisions</button>
+      <button class="tab" data-tab="finance">Finance</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+
+  <dialog class="modal" id="projectModal">
+    <form method="dialog" id="projectForm">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow" id="modalEyebrow">New project</span>
+          <h2 id="modalTitle">Create project</h2>
+        </div>
+        <button type="button" class="icon-button" id="closeModalBtn">×</button>
+      </div>
+
+      <input type="hidden" id="projectId" />
+      <div class="form-grid">
+        <label class="field field-wide"><span>Project name *</span><input id="name" required /></label>
+        <label class="field"><span>Brand / Area</span><input id="area" placeholder="Personal, IZY Tech, Client…" /></label>
+        <label class="field"><span>Type</span><input id="type" placeholder="Website, App, Business…" /></label>
+        <label class="field"><span>Stage</span><select id="stage"></select></label>
+        <label class="field"><span>Status</span><select id="status"></select></label>
+        <label class="field"><span>Priority</span><select id="priority"></select></label>
+        <label class="field"><span>Health</span><select id="health"></select></label>
+        <label class="field"><span>Progress %</span><input id="progress" type="number" min="0" max="100" step="1" /></label>
+        <label class="field"><span>Effort</span><select id="effort"></select></label>
+        <label class="field"><span>Value / Impact</span><select id="value"></select></label>
+        <label class="field"><span>Start date</span><input id="startDate" type="date" /></label>
+        <label class="field"><span>Target date</span><input id="targetDate" type="date" /></label>
+        <label class="field field-wide"><span>Summary</span><textarea id="summary" rows="3"></textarea></label>
+        <label class="field field-wide"><span>Objective</span><textarea id="objective" rows="2"></textarea></label>
+        <label class="field field-wide"><span>Next action</span><input id="nextAction" /></label>
+        <label class="field"><span>Waiting on</span><input id="waitingOn" /></label>
+        <label class="field"><span>Blocker</span><input id="blocker" /></label>
+        <label class="field"><span>Revenue type</span><input id="revenueType" placeholder="None, Client fee, Subscription…" /></label>
+        <label class="field"><span>Owner</span><input id="owner" /></label>
+        <label class="field"><span>Budget</span><input id="budget" type="number" min="0" step="0.01" /></label>
+        <label class="field"><span>Spent</span><input id="spent" type="number" min="0" step="0.01" /></label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="danger-button" id="deleteProjectBtn" hidden>Delete</button>
+        <div class="spacer"></div>
+        <button type="button" class="secondary-button" id="cancelProjectBtn">Cancel</button>
+        <button type="submit" class="primary-button">Save project</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal small-modal" id="columnsModal">
+    <div class="modal-header">
+      <div>
+        <span class="eyebrow">Table preferences</span>
+        <h2>Visible columns</h2>
+      </div>
+      <button class="icon-button" id="closeColumnsBtn">×</button>
+    </div>
+    <div class="columns-list" id="columnsList"></div>
+    <div class="modal-actions"><div class="spacer"></div><button class="primary-button" id="doneColumnsBtn">Done</button></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
